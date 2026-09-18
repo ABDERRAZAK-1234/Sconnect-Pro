@@ -53,8 +53,67 @@ const findWhere = async (table, conditions) => {
     return result.rows;
 };
 
+const create = async (table, data) => {
+    checkTable(table);
+
+    const columns = Object.keys(data);
+    const values = Object.values(data);
+
+    const placeholders = columns
+        .map((_, index) => `$${index + 1}`)
+        .join(", ");
+
+    const result = await db.query(
+        `INSERT INTO ${table} (${columns.join(", ")})
+        VALUES (${placeholders})
+         RETURNING *`,
+        values
+    );
+
+    return result.rows[0];
+};
+
+const update = async (table, id, data) => {
+    checkTable(table);
+
+    const columns = Object.keys(data);
+    const values = Object.values(data);
+
+    const setClause = columns
+        .map((column, index) => `${column} = $${index + 1}`)
+        .join(", ");
+
+    values.push(id);
+
+    const result = await db.query(
+        `UPDATE ${table}
+         SET ${setClause}
+         WHERE id = $${values.length}
+         RETURNING *`,
+        values
+    );
+
+    return result.rows[0];
+};
+
+const remove = async (table, id) => {
+    checkTable(table);
+
+    const result = await db.query(
+        `DELETE FROM ${table}
+         WHERE id = $1
+         RETURNING *`,
+        [id]
+    );
+
+    return result.rows[0];
+};
+
 module.exports = {
     findAll,
     findById,
-    findWhere
+    findWhere,
+    create,
+    update,
+    remove
 };
