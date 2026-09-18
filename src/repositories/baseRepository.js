@@ -36,7 +36,25 @@ const findById = async (table, id) => {
     return result.rows[0];
 };
 
+const findWhere = async (table, conditions) => {
+    checkTable(table);
+
+    const colums = Object.keys(conditions);
+    const values = Object.values(conditions);
+
+    const whereClause = colums
+        .map((colum, index) => `${colum} = $${index + 1}`)
+        .join(" AND ");
+
+    const result = await db.query(
+        `SELECT * FROM ${table} WHERE ${whereClause}`, values
+    );
+
+    return result.rows;
+};
+
 module.exports = {
     findAll,
-    findById
+    findById,
+    findWhere
 };
