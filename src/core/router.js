@@ -1,5 +1,7 @@
 const router = require('find-my-way')();
 
+const facilityController = require("../controllers/facilityController");
+
 router.get('/', async (req, res)=>{
     res.writeHead(200,{
         'Content-Type' : 'application/json'
@@ -21,5 +23,9 @@ router.get('/test', async (req, res) => {
     }));
 });
 
+
+router.get("/facilities", facilityController.getFacilities);
+
+router.get("/facilities/:id", facilityController.getFacilityById);
 
 module.exports = router;
