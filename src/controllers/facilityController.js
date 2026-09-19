@@ -1,0 +1,77 @@
+const infrastructureRepository = require("../repositories/infrastructureRepository");
+
+const getFacilities = async (req, res) => {
+    try {
+        const facilities = await infrastructureRepository.findAll();
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: true,
+            data: facilities
+        }));
+
+    } catch (error) {
+        console.error("Erreur récupération infrastructures :", error);
+
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: false,
+            message: "Erreur serveur"
+        }));
+    }
+};
+
+const getFacilityById = async (req, res, params) => {
+    try {
+        console.log("PARAMS:", params);
+
+        const id = Number(params.id);
+
+        console.log("ID:", id);
+
+        const facility = await infrastructureRepository.findById(id);
+
+        if (!facility) {
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                success: false,
+                message: "Infrastructure introuvable"
+            }));
+        }
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: true,
+            data: facility
+        }));
+
+    } catch (error) {
+        console.error("ERREUR COMPLETE :", error);
+
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: false,
+            message: error.message
+        }));
+    }
+};
+
+module.exports = {
+    getFacilities,
+    getFacilityById
+};
