@@ -23,9 +23,11 @@ router.get('/test', async (req, res) => {
     }));
 });
 
-
+// routes infra
 router.get("/facilities", facilityController.getFacilities);
 
 router.get("/facilities/:id", facilityController.getFacilityById);
+
+router.post("/facilities", facilityController.createFacility);
 
 module.exports = router;
