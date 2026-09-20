@@ -101,8 +101,62 @@ const createFacility = async (req, res) => {
     }
 };
 
+const updateFacility = async (req, res, params) => {
+    try {
+        const id = Number(params.id);
+
+        if (!id || id <= 0) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                success: false,
+                message: "ID invalide"
+            }));
+        }
+
+        const body = await parseBody(req);
+
+        const facility = await infrastructureRepository.update(id, body);
+
+        if (!facility) {
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                success: false,
+                message: "Infrastructure introuvable"
+            }));
+        }
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: true,
+            data: facility
+        }));
+
+    } catch (error) {
+        console.error("Erreur modification infrastructure :", error);
+
+        res.writeHead(400, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: false,
+            message: error.message
+        }));
+    }
+};
+
 module.exports = {
     getFacilities,
     getFacilityById,
-    createFacility
+    createFacility,
+    updateFacility
 };
