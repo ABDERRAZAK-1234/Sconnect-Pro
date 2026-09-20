@@ -32,4 +32,6 @@ router.post("/facilities", facilityController.createFacility);
 
 router.put("/facilities/:id", facilityController.updateFacility);
 
+router.delete("/facilities/:id", facilityController.deleteFacility);
+
 module.exports = router;
