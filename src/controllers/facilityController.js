@@ -1,3 +1,4 @@
+const parseBody = require("../utils/bodyParser");
 const infrastructureRepository = require("../repositories/infrastructureRepository");
 
 const getFacilities = async (req, res) => {
@@ -71,7 +72,37 @@ const getFacilityById = async (req, res, params) => {
     }
 };
 
+const createFacility = async (req, res) => {
+    try {
+        const body = await parseBody(req);
+
+        const facility = await infrastructureRepository.create(body);
+
+        res.writeHead(201, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: true,
+            data: facility
+        }));
+
+    } catch (error) {
+        console.error("Erreur création infrastructure :", error);
+
+        res.writeHead(400, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            success: false,
+            message: error.message
+        }));
+    }
+};
+
 module.exports = {
     getFacilities,
-    getFacilityById
+    getFacilityById,
+    createFacility
 };
