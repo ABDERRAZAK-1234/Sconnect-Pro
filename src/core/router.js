@@ -30,4 +30,6 @@ router.get("/facilities/:id", facilityController.getFacilityById);
 
 router.post("/facilities", facilityController.createFacility);
 
+router.put("/facilities/:id", facilityController.updateFacility);
+
 module.exports = router;
