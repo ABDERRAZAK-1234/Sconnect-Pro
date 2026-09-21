@@ -5,6 +5,7 @@ const familleController = require("../controllers/familleController");
 const membreController = require("../controllers/memberController");
 const associationController = require("../controllers/associationController");
 const activiteController = require("../controllers/activiteController");
+const inscriptionController = require("../controllers/inscriptionController");
 
 router.get('/', async (req, res)=>{
     res.writeHead(200,{
@@ -85,6 +86,18 @@ router.post("/activites", activiteController.createActivite);
 router.put("/activites/:id", activiteController.updateActivite);
 
 router.delete("/activites/:id", activiteController.deleteActivite);
+
+// routes inscription
+
+router.get("/inscriptions", inscriptionController.getInscriptions);
+
+router.get("/inscriptions/:id", inscriptionController.getInscriptionById);
+
+router.post("/inscriptions", inscriptionController.createInscription);
+
+router.put("/inscriptions/:id", inscriptionController.updateInscription);
+
+router.delete("/inscriptions/:id", inscriptionController.deleteInscription);
 
 
 
