@@ -6,6 +6,7 @@ const membreController = require("../controllers/memberController");
 const associationController = require("../controllers/associationController");
 const activiteController = require("../controllers/activiteController");
 const inscriptionController = require("../controllers/inscriptionController");
+const paiementController = require("../controllers/paiementController");
 
 router.get('/', async (req, res)=>{
     res.writeHead(200,{
@@ -99,6 +100,17 @@ router.put("/inscriptions/:id", inscriptionController.updateInscription);
 
 router.delete("/inscriptions/:id", inscriptionController.deleteInscription);
 
+// routes de paiement
+
+router.get("/paiements", paiementController.getPaiements);
+
+router.get("/paiements/:id", paiementController.getPaiementById);
+
+router.post("/paiements", paiementController.createPaiement);
+
+router.put("/paiements/:id", paiementController.updatePaiement);
+
+router.delete("/paiements/:id", paiementController.deletePaiement);
 
 
 
