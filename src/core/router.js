@@ -2,7 +2,8 @@ const router = require('find-my-way')();
 
 const facilityController = require("../controllers/facilityController");
 const familleController = require("../controllers/familleController");
-const membreController = require("../controllers/membreController");
+const membreController = require("../controllers/memberController");
+const associationController = require("../controllers/associationController");
 
 router.get('/', async (req, res)=>{
     res.writeHead(200,{
@@ -59,6 +60,18 @@ router.post("/membres", membreController.createMembre);
 router.put("/membres/:id", membreController.updateMembre);
 
 router.delete("/membres/:id", membreController.deleteMembre);
+
+// routes association
+
+router.get("/associations", associationController.getAssociations);
+
+router.get("/associations/:id", associationController.getAssociationById);
+
+router.post("/associations", associationController.createAssociation);
+
+router.put("/associations/:id", associationController.updateAssociation);
+
+router.delete("/associations/:id", associationController.deleteAssociation);
 
 
 
