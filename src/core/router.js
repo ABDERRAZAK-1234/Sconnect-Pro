@@ -4,6 +4,7 @@ const facilityController = require("../controllers/facilityController");
 const familleController = require("../controllers/familleController");
 const membreController = require("../controllers/memberController");
 const associationController = require("../controllers/associationController");
+const activiteController = require("../controllers/activiteController");
 
 router.get('/', async (req, res)=>{
     res.writeHead(200,{
@@ -72,6 +73,18 @@ router.post("/associations", associationController.createAssociation);
 router.put("/associations/:id", associationController.updateAssociation);
 
 router.delete("/associations/:id", associationController.deleteAssociation);
+
+// router activite's
+
+router.get("/activites", activiteController.getActivites);
+
+router.get("/activites/:id", activiteController.getActiviteById);
+
+router.post("/activites", activiteController.createActivite);
+
+router.put("/activites/:id", activiteController.updateActivite);
+
+router.delete("/activites/:id", activiteController.deleteActivite);
 
 
 
