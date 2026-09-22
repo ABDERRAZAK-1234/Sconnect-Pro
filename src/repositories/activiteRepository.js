@@ -20,10 +20,44 @@ const remove = (id) => {
     return baseRepository.remove("activite", id);
 };
 
+const findConflictingActivity = async (
+    infrastructureId,
+    jourSemaine,
+    heureDebut,
+    heureFin,
+    excludeId = null
+) => {
+
+    const activites = await baseRepository.findWhere(
+        "activite",
+        {
+            infrastructure_id: infrastructureId,
+            jour_semaine: jourSemaine
+        }
+    );
+
+    return activites.find((activite) => {
+
+        
+        if (
+            excludeId !== null &&
+            Number(activite.id) === Number(excludeId)
+        ) {
+            return false;
+        }
+
+        return (
+            heureDebut < activite.heure_fin &&
+            heureFin > activite.heure_debut
+        );
+    });
+};
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
-    remove
+    remove,
+    findConflictingActivity
 };
