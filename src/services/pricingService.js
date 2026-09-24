@@ -2,15 +2,18 @@ const membreRepository = require("../repositories/membreRepository");
 const familleRepository = require("../repositories/familleRepository");
 const inscriptionRepository = require("../repositories/inscriptionRepository");
 
-const calculatePrice = async (membreId, prixBase) => {
+const calculatePrice = async (membreId, prixBase, client) => {
 
-    const membre = await membreRepository.findById(membreId);
+    const membre = await membreRepository.findById(
+        membreId,
+        client
+    );
 
     if (!membre) {
         throw new Error("Membre introuvable");
     }
 
-    const famille = await familleRepository.findById(membre.famille_id);
+    const famille = await familleRepository.findById(membre.famille_id, client);
 
     if (!famille) {
         throw new Error("Famille introuvable");
@@ -30,7 +33,8 @@ const calculatePrice = async (membreId, prixBase) => {
     // Réduction familiale
     const nombreInscriptions =
         await inscriptionRepository.countFamilyRegistrations(
-            membre.famille_id
+            membre.famille_id,
+            client 
         );
 
     if (nombreInscriptions === 1) {
