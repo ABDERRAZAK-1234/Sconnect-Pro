@@ -53,11 +53,24 @@ const findConflictingActivity = async (
     });
 };
 
+const findByIdForUpdate = async (id, client) => {
+    const result = await client.query(
+        `SELECT *
+         FROM activite
+         WHERE id = $1
+         FOR UPDATE`,
+        [id]
+    );
+
+    return result.rows[0];
+};
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
     remove,
-    findConflictingActivity
+    findConflictingActivity,
+    findByIdForUpdate
 };
