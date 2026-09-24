@@ -4,8 +4,8 @@ const findAll = () => {
     return baseRepository.findAll("famille");
 };
 
-const findById = (id) => {
-    return baseRepository.findById("famille", id);
+const findById = (id, client) => {
+    return baseRepository.findById("famille", id, client);
 };
 
 const create = (data) => {
