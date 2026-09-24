@@ -20,8 +20,7 @@ const remove = (id) => {
     return baseRepository.remove("inscription", id);
 };
 
-const countFamilyRegistrations = async (familleId) => {
-    const db = require("../config/db");
+const countFamilyRegistrations = async (familleId, client) => {
 
     const result = await db.query(
         `SELECT COUNT(*) AS total
@@ -39,10 +38,9 @@ const countFamilyRegistrations = async (familleId) => {
     return Number(result.rows[0].total);
 };
 
-const countConfirmed = async (activiteId) => {
-    const db = require("../config/db");
+const countConfirmed = async (activiteId, client) => {
 
-    const result = await db.query(
+    const result = await client.query(
         `SELECT COUNT(*) AS total
          FROM inscription
          WHERE activite_id = $1
@@ -88,6 +86,25 @@ const findNextWaiting = async (activiteId) => {
     return result.rows[0];
 };
 
+const createWithClient = async (data, client) => {
+
+    const columns = Object.keys(data);
+    const values = Object.values(data);
+
+    const placeholders = columns
+        .map((_, index) => `$${index + 1}`)
+        .join(", ");
+
+    const result = await client.query(
+        `INSERT INTO inscription (${columns.join(", ")})
+         VALUES (${placeholders})
+         RETURNING *`,
+        values
+    );
+
+    return result.rows[0];
+};
+
 module.exports = {
     findAll,
     findById,
@@ -97,5 +114,6 @@ module.exports = {
     countFamilyRegistrations,
     countConfirmed,
     findWaitingList,
-    findNextWaiting
+    findNextWaiting,
+    createWithClient
 };
