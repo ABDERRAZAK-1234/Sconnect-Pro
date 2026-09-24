@@ -39,11 +39,63 @@ const countFamilyRegistrations = async (familleId) => {
     return Number(result.rows[0].total);
 };
 
+const countConfirmed = async (activiteId) => {
+    const db = require("../config/db");
+
+    const result = await db.query(
+        `SELECT COUNT(*) AS total
+         FROM inscription
+         WHERE activite_id = $1
+         AND statut = 'confirmee'`,
+        [activiteId]
+    );
+
+    return Number(result.rows[0].total);
+};
+
+const findWaitingList = async (activiteId) => {
+    const db = require("../config/db");
+
+    const result = await db.query(
+        `SELECT i.*, m.est_resident
+         FROM inscription i
+         JOIN membre m ON m.id = i.membre_id
+         WHERE i.activite_id = $1
+         AND i.statut = 'en_attente'
+         ORDER BY i.score_priorite DESC,
+                  i.date_entree_liste_attente ASC`,
+        [activiteId]
+    );
+
+    return result.rows;
+};
+
+const findNextWaiting = async (activiteId) => {
+    const db = require("../config/db");
+
+    const result = await db.query(
+        `SELECT i.*, m.est_resident
+         FROM inscription i
+         JOIN membre m ON m.id = i.membre_id
+         WHERE i.activite_id = $1
+         AND i.statut = 'en_attente'
+         ORDER BY i.score_priorite DESC,
+                  i.date_entree_liste_attente ASC
+         LIMIT 1`,
+        [activiteId]
+    );
+
+    return result.rows[0];
+};
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
     remove,
-    countFamilyRegistrations
+    countFamilyRegistrations,
+    countConfirmed,
+    findWaitingList,
+    findNextWaiting
 };
