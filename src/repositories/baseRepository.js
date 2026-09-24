@@ -26,11 +26,12 @@ const findAll = async (table) => {
     return result.rows;
 };
 
-const findById = async (table, id) => {
+const findById = async (table, id, client = db) => {
     checkTable(table);
 
-    const result = await db.query(
-        `SELECT * FROM ${table} WHERE id = $1`, [id]
+    const result = await client.query(
+        `SELECT * FROM ${table} WHERE id = $1`,
+        [id]
     );
 
     return result.rows[0];
