@@ -1,74 +1,62 @@
 const parseBody = require("../utils/bodyParser");
 const infrastructureRepository = require("../repositories/infrastructureRepository");
+const render = require("../core/renderer");
 
 const getFacilities = async (req, res) => {
     try {
         const facilities = await infrastructureRepository.findAll();
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/facilities/index", {
+            title: "Infrastructures",
+            facilities
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: facilities
-        }));
 
     } catch (error) {
         console.error("Erreur récupération infrastructures :", error);
 
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: "Erreur serveur"
-        }));
+        res.end("Erreur lors de la récupération des infrastructures");
     }
 };
 
 const getFacilityById = async (req, res, params) => {
     try {
-        console.log("PARAMS:", params);
-
         const id = Number(params.id);
 
-        console.log("ID:", id);
+        if (!id || id <= 0) {
+            res.writeHead(400, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("ID invalide");
+        }
 
         const facility = await infrastructureRepository.findById(id);
 
         if (!facility) {
             res.writeHead(404, {
-                "Content-Type": "application/json"
+                "Content-Type": "text/plain; charset=utf-8"
             });
 
-            return res.end(JSON.stringify({
-                success: false,
-                message: "Infrastructure introuvable"
-            }));
+            return res.end("Infrastructure introuvable");
         }
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/facilities/detail", {
+            title: facility.nom,
+            facility
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: facility
-        }));
 
     } catch (error) {
-        console.error("ERREUR COMPLETE :", error);
+        console.error("Erreur récupération infrastructure :", error);
 
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end("Erreur serveur");
     }
 };
 
@@ -76,29 +64,36 @@ const createFacility = async (req, res) => {
     try {
         const body = await parseBody(req);
 
-        const facility = await infrastructureRepository.create(body);
+        const data = {
+            nom: body.nom,
+            type: body.type,
+            capacite_erp: Number(body.capacite_erp),
+            divisible: body.divisible === "true"
+        };
 
-        res.writeHead(201, {
-            "Content-Type": "application/json"
+        await infrastructureRepository.create(data);
+
+        res.writeHead(303, {
+            "Location": "/facilities"
         });
 
-        res.end(JSON.stringify({
-            success: true,
-            data: facility
-        }));
+        res.end();
 
     } catch (error) {
         console.error("Erreur création infrastructure :", error);
 
         res.writeHead(400, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end(error.message);
     }
+};
+
+const showCreateFacility = async (req, res) => {
+    await render(res, "pages/facilities/create", {
+        title: "Créer une infrastructure"
+    });
 };
 
 const updateFacility = async (req, res, params) => {
@@ -210,6 +205,7 @@ module.exports = {
     getFacilities,
     getFacilityById,
     createFacility,
+    showCreateFacility,
     updateFacility,
     deleteFacility
 };
