@@ -201,11 +201,50 @@ const deleteFacility = async (req, res, params) => {
     }
 };
 
+const showEditFacility = async (req, res, params) => {
+    try {
+        const id = Number(params.id);
+
+        if (!id || id <= 0) {
+            res.writeHead(400, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("ID invalide");
+        }
+
+        const facility = await infrastructureRepository.findById(id);
+
+        if (!facility) {
+            res.writeHead(404, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("Infrastructure introuvable");
+        }
+
+        await render(res, "pages/facilities/edit", {
+            title: `Modifier ${facility.nom}`,
+            facility
+        });
+
+    } catch (error) {
+        console.error("Erreur affichage modification :", error);
+
+        res.writeHead(500, {
+            "Content-Type": "text/plain; charset=utf-8"
+        });
+
+        res.end("Erreur serveur");
+    }
+};
+
 module.exports = {
     getFacilities,
     getFacilityById,
     createFacility,
     showCreateFacility,
     updateFacility,
-    deleteFacility
+    deleteFacility,
+    showEditFacility
 };

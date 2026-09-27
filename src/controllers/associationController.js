@@ -1,30 +1,24 @@
 const associationRepository = require("../repositories/associationRepository");
 const parseBody = require("../utils/bodyParser");
+const render = require("../core/renderer");
 
 const getAssociations = async (req, res) => {
     try {
         const associations = await associationRepository.findAll();
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/associations/index", {
+            title: "Associations",
+            associations
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: associations
-        }));
 
     } catch (error) {
         console.error("Erreur récupération associations :", error);
 
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: "Erreur serveur"
-        }));
+        res.end("Erreur lors de la récupération des associations");
     }
 };
 
@@ -34,48 +28,79 @@ const getAssociationById = async (req, res, params) => {
 
         if (!id || id <= 0) {
             res.writeHead(400, {
-                "Content-Type": "application/json"
+                "Content-Type": "text/plain; charset=utf-8"
             });
 
-            return res.end(JSON.stringify({
-                success: false,
-                message: "ID invalide"
-            }));
+            return res.end("ID invalide");
         }
 
         const association = await associationRepository.findById(id);
 
         if (!association) {
             res.writeHead(404, {
-                "Content-Type": "application/json"
+                "Content-Type": "text/plain; charset=utf-8"
             });
 
-            return res.end(JSON.stringify({
-                success: false,
-                message: "Association introuvable"
-            }));
+            return res.end("Association introuvable");
         }
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/associations/detail", {
+            title: association.nom,
+            association
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: association
-        }));
 
     } catch (error) {
         console.error("Erreur récupération association :", error);
 
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: "Erreur serveur"
-        }));
+        res.end("Erreur serveur");
+    }
+};
+
+const showCreateAssociation = async (req, res) => {
+    await render(res, "pages/associations/create", {
+        title: "Créer une association"
+    });
+};
+
+const showEditAssociation = async (req, res, params) => {
+    try {
+        const id = Number(params.id);
+
+        if (!id || id <= 0) {
+            res.writeHead(400, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("ID invalide");
+        }
+
+        const association = await associationRepository.findById(id);
+
+        if (!association) {
+            res.writeHead(404, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("Association introuvable");
+        }
+
+        await render(res, "pages/associations/edit", {
+            title: `Modifier ${association.nom}`,
+            association
+        });
+
+    } catch (error) {
+        console.error("Erreur affichage modification association :", error);
+
+        res.writeHead(500, {
+            "Content-Type": "text/plain; charset=utf-8"
+        });
+
+        res.end("Erreur serveur");
     }
 };
 
@@ -83,28 +108,28 @@ const createAssociation = async (req, res) => {
     try {
         const body = await parseBody(req);
 
-        const association = await associationRepository.create(body);
+        const data = {
+            nom: body.nom,
+            contact: body.contact || null,
+            description: body.description || null
+        };
 
-        res.writeHead(201, {
-            "Content-Type": "application/json"
+        await associationRepository.create(data);
+
+        res.writeHead(303, {
+            "Location": "/associations"
         });
 
-        res.end(JSON.stringify({
-            success: true,
-            data: association
-        }));
+        res.end();
 
     } catch (error) {
         console.error("Erreur création association :", error);
 
         res.writeHead(400, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end(error.message);
     }
 };
 
@@ -216,6 +241,8 @@ const deleteAssociation = async (req, res, params) => {
 module.exports = {
     getAssociations,
     getAssociationById,
+    showCreateAssociation,
+    showEditAssociation,
     createAssociation,
     updateAssociation,
     deleteAssociation

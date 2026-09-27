@@ -1,28 +1,22 @@
 const paiementRepository = require("../repositories/paiementRepository");
 const parseBody = require("../utils/bodyParser");
+const render = require("../core/renderer");
 
 const getPaiements = async (req, res) => {
     try {
         const paiements = await paiementRepository.findAll();
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/paiements/index", {
+            title: "Paiements",
+            paiements
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: paiements
-        }));
 
     } catch (error) {
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end("Erreur lors de la récupération des paiements");
     }
 };
 
@@ -34,33 +28,65 @@ const getPaiementById = async (req, res, params) => {
 
         if (!paiement) {
             res.writeHead(404, {
-                "Content-Type": "application/json"
+                "Content-Type": "text/plain; charset=utf-8"
             });
 
-            return res.end(JSON.stringify({
-                success: false,
-                message: "Paiement introuvable"
-            }));
+            return res.end("Paiement introuvable");
         }
 
-        res.writeHead(200, {
-            "Content-Type": "application/json"
+        await render(res, "pages/paiements/detail", {
+            title: `Paiement #${paiement.id}`,
+            paiement
         });
-
-        res.end(JSON.stringify({
-            success: true,
-            data: paiement
-        }));
 
     } catch (error) {
         res.writeHead(500, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end("Erreur serveur");
+    }
+};
+
+const showCreatePaiement = async (req, res) => {
+    await render(res, "pages/paiements/create", {
+        title: "Créer un paiement"
+    });
+};
+
+const showEditPaiement = async (req, res, params) => {
+    try {
+        const id = Number(params.id);
+
+        if (!id || id <= 0) {
+            res.writeHead(400, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("ID invalide");
+        }
+
+        const paiement = await paiementRepository.findById(id);
+
+        if (!paiement) {
+            res.writeHead(404, {
+                "Content-Type": "text/plain; charset=utf-8"
+            });
+
+            return res.end("Paiement introuvable");
+        }
+
+        await render(res, "pages/paiements/edit", {
+            title: `Modifier paiement #${paiement.id}`,
+            paiement
+        });
+
+    } catch (error) {
+        res.writeHead(500, {
+            "Content-Type": "text/plain; charset=utf-8"
+        });
+
+        res.end("Erreur serveur");
     }
 };
 
@@ -68,27 +94,28 @@ const createPaiement = async (req, res) => {
     try {
         const body = await parseBody(req);
 
-        const paiement = await paiementRepository.create(body);
+        const data = {
+            inscription_id: Number(body.inscription_id),
+            montant: Number(body.montant),
+            methode: body.methode,
+            nombre_echeances: Number(body.nombre_echeances) || 1,
+            statut: body.statut || "en_attente"
+        };
 
-        res.writeHead(201, {
-            "Content-Type": "application/json"
+        await paiementRepository.create(data);
+
+        res.writeHead(303, {
+            "Location": "/paiements"
         });
 
-        res.end(JSON.stringify({
-            success: true,
-            message: "Paiement créé avec succès",
-            data: paiement
-        }));
+        res.end();
 
     } catch (error) {
         res.writeHead(400, {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain; charset=utf-8"
         });
 
-        res.end(JSON.stringify({
-            success: false,
-            message: error.message
-        }));
+        res.end(error.message);
     }
 };
 
@@ -175,6 +202,8 @@ const deletePaiement = async (req, res, params) => {
 module.exports = {
     getPaiements,
     getPaiementById,
+    showCreatePaiement,
+    showEditPaiement,
     createPaiement,
     updatePaiement,
     deletePaiement
