@@ -1,0 +1,47 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title"><%= famille.nom_famille %></h1>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a href="/familles/<%= famille.id %>/edit" class="btn btn-edit">Modifier</a>
+        <button class="btn btn-danger" onclick="deleteItem(<%= famille.id %>, this)">Supprimer</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="detail-card">
+        <div class="detail-field">
+            <div class="detail-label">ID</div>
+            <div class="detail-value">#<%= famille.id %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Nom de famille</div>
+            <div class="detail-value"><%= famille.nom_famille %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Quotient familial</div>
+            <div class="detail-value">
+                <% if (famille.quotient_familial !== null && famille.quotient_familial !== undefined) { %>
+                    <span class="badge badge-primary"><%= famille.quotient_familial %></span>
+                <% } else { %>
+                    <span style="color:var(--text-muted)">Non renseigné</span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<a href="/familles" class="btn-back">← Retour aux familles</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette famille ?')) return;
+        btn.classList.add('loading');
+        const r = await fetch(`/familles/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.href = '/familles'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

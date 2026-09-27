@@ -1,0 +1,51 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Modifier la famille</h1>
+    <a href="/familles" class="btn-back">← Retour</a>
+</div>
+
+<div class="card form-card">
+    <form id="editForm">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="nom_famille">Nom de famille</label>
+                <input type="text" id="nom_famille" name="nom_famille" value="<%= famille.nom_famille %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quotient_familial">Quotient familial</label>
+                <input type="number" id="quotient_familial" name="quotient_familial"
+                    value="<%= famille.quotient_familial !== null && famille.quotient_familial !== undefined ? famille.quotient_familial : '' %>"
+                    min="0" step="0.01" placeholder="Optionnel">
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/familles" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const qf = document.getElementById('quotient_familial').value;
+        const data = {
+            nom_famille: document.getElementById('nom_famille').value,
+            quotient_familial: qf !== '' ? Number(qf) : null
+        };
+        const r = await fetch('/familles/<%= famille.id %>', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (r.ok) { window.location.href = '/familles'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); }
+    });
+</script>
+
+<%- include('../../partials/footer') %>

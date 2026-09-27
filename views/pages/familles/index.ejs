@@ -1,0 +1,68 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Familles</h1>
+    <a href="/familles/create" class="btn btn-primary">+ Nouvelle famille</a>
+</div>
+
+<% if (familles.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">👨‍👩‍👧</div>
+        <p>Aucune famille trouvée.</p>
+        <br>
+        <a href="/familles/create" class="btn btn-primary">Créer la première</a>
+    </div>
+<% } else { %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= familles.length %></strong> famille<%= familles.length > 1 ? 's' : '' %></div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom de famille</th>
+                    <th>Quotient familial</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% familles.forEach(f => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= f.id %></span></td>
+                        <td><strong><%= f.nom_famille %></strong></td>
+                        <td>
+                            <% if (f.quotient_familial !== null && f.quotient_familial !== undefined) { %>
+                                <span class="badge badge-primary"><%= f.quotient_familial %></span>
+                            <% } else { %>
+                                <span style="color:var(--text-muted)">—</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/familles/<%= f.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/familles/<%= f.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button class="btn btn-danger" onclick="deleteItem(<%= f.id %>, this)">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette famille ?')) return;
+        btn.classList.add('loading'); btn.textContent = '…';
+        const r = await fetch(`/familles/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.reload(); }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); btn.textContent = 'Supprimer'; }
+    }
+</script>
+
+<%- include('../../partials/footer') %>
