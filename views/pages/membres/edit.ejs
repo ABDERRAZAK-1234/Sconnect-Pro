@@ -1,0 +1,108 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Modifier le membre</h1>
+    <a href="/membres" class="btn-back">← Retour</a>
+</div>
+
+<div class="card" style="max-width:780px">
+    <form id="editForm">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" name="prenom" value="<%= membre.prenom %>" required>
+            </div>
+            <div class="form-group">
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" name="nom" value="<%= membre.nom %>" required>
+            </div>
+            <div class="form-group">
+                <label for="date_naissance">Date de naissance</label>
+                <input type="date" id="date_naissance" name="date_naissance"
+                    value="<%= membre.date_naissance ? new Date(membre.date_naissance).toISOString().split('T')[0] : '' %>" required>
+            </div>
+            <div class="form-group">
+                <label for="famille_id">Famille (ID)</label>
+                <input type="number" id="famille_id" name="famille_id" value="<%= membre.famille_id %>" min="1" required>
+            </div>
+            <div class="form-group">
+                <label>Résidence</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="est_resident" name="est_resident" <%= membre.est_resident ? 'checked' : '' %>>
+                    <label for="est_resident">Le membre est résident</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="code_pass_sport">Code Pass'Sport</label>
+                <input type="text" id="code_pass_sport" name="code_pass_sport" value="<%= membre.code_pass_sport || '' %>" placeholder="Optionnel">
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <fieldset>
+            <legend>Certificat médical</legend>
+            <div class="form-grid" style="margin-top:1rem">
+                <div class="form-group">
+                    <label for="date_emission_certificat">Date d'émission</label>
+                    <input type="date" id="date_emission_certificat" name="date_emission_certificat"
+                        value="<%= membre.date_emission_certificat ? new Date(membre.date_emission_certificat).toISOString().split('T')[0] : '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="date_expiration_certificat">Date d'expiration</label>
+                    <input type="date" id="date_expiration_certificat" name="date_expiration_certificat"
+                        value="<%= membre.date_expiration_certificat ? new Date(membre.date_expiration_certificat).toISOString().split('T')[0] : '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="type_sport_certifie">Type de sport certifié</label>
+                    <input type="text" id="type_sport_certifie" name="type_sport_certifie" value="<%= membre.type_sport_certifie || '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="statut_certificat">Statut du certificat</label>
+                    <select id="statut_certificat" name="statut_certificat">
+                        <option value="">— Aucun —</option>
+                        <option value="valide" <%= membre.statut_certificat === 'valide' ? 'selected' : '' %>>Valide</option>
+                        <option value="expire" <%= membre.statut_certificat === 'expire' ? 'selected' : '' %>>Expiré</option>
+                        <option value="refuse" <%= membre.statut_certificat === 'refuse' ? 'selected' : '' %>>Refusé</option>
+                        <option value="medical_non_compliant" <%= membre.statut_certificat === 'medical_non_compliant' ? 'selected' : '' %>>Non conforme</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/membres" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const g = (id) => document.getElementById(id);
+        const data = {
+            prenom: g('prenom').value,
+            nom: g('nom').value,
+            date_naissance: g('date_naissance').value,
+            famille_id: Number(g('famille_id').value),
+            est_resident: g('est_resident').checked,
+            code_pass_sport: g('code_pass_sport').value || null,
+            date_emission_certificat: g('date_emission_certificat').value || null,
+            date_expiration_certificat: g('date_expiration_certificat').value || null,
+            type_sport_certifie: g('type_sport_certifie').value || null,
+            statut_certificat: g('statut_certificat').value || null
+        };
+        const r = await fetch('/membres/<%= membre.id %>', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (r.ok) { window.location.href = '/membres'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); }
+    });
+</script>
+
+<%- include('../../partials/footer') %>

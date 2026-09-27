@@ -1,0 +1,87 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Membres</h1>
+    <a href="/membres/create" class="btn btn-primary">+ Nouveau membre</a>
+</div>
+
+<% if (membres.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">👤</div>
+        <p>Aucun membre trouvé.</p>
+        <br>
+        <a href="/membres/create" class="btn btn-primary">Créer le premier</a>
+    </div>
+<% } else { %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= membres.length %></strong> membre<%= membres.length > 1 ? 's' : '' %></div>
+        <div class="stat-chip"><strong><%= membres.filter(m => m.est_resident).length %></strong> résidents</div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Prénom & Nom</th>
+                    <th>Date de naissance</th>
+                    <th>Résident</th>
+                    <th>Famille</th>
+                    <th>Certificat</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% membres.forEach(m => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= m.id %></span></td>
+                        <td><strong><%= m.prenom %> <%= m.nom %></strong></td>
+                        <td><%= m.date_naissance ? new Date(m.date_naissance).toLocaleDateString('fr-FR') : '—' %></td>
+                        <td>
+                            <% if (m.est_resident) { %>
+                                <span class="badge badge-success">Résident</span>
+                            <% } else { %>
+                                <span class="badge badge-neutral">Externe</span>
+                            <% } %>
+                        </td>
+                        <td><span style="color:var(--text-secondary)">#<%= m.famille_id %></span></td>
+                        <td>
+                            <% if (m.statut_certificat === 'valide') { %>
+                                <span class="badge badge-success">Valide</span>
+                            <% } else if (m.statut_certificat === 'expire') { %>
+                                <span class="badge badge-danger">Expiré</span>
+                            <% } else if (m.statut_certificat === 'refuse') { %>
+                                <span class="badge badge-danger">Refusé</span>
+                            <% } else if (m.statut_certificat === 'medical_non_compliant') { %>
+                                <span class="badge badge-warning">Non conforme</span>
+                            <% } else { %>
+                                <span style="color:var(--text-muted)">—</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/membres/<%= m.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/membres/<%= m.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button class="btn btn-danger" onclick="deleteItem(<%= m.id %>, this)">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer ce membre ?')) return;
+        btn.classList.add('loading'); btn.textContent = '…';
+        const r = await fetch(`/membres/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.reload(); }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); btn.textContent = 'Supprimer'; }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,91 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title"><%= membre.prenom %> <%= membre.nom %></h1>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a href="/membres/<%= membre.id %>/edit" class="btn btn-edit">Modifier</a>
+        <button class="btn btn-danger" onclick="deleteItem(<%= membre.id %>, this)">Supprimer</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="detail-card">
+        <div class="detail-field">
+            <div class="detail-label">ID</div>
+            <div class="detail-value">#<%= membre.id %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Prénom</div>
+            <div class="detail-value"><%= membre.prenom %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Nom</div>
+            <div class="detail-value"><%= membre.nom %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Date de naissance</div>
+            <div class="detail-value"><%= membre.date_naissance ? new Date(membre.date_naissance).toLocaleDateString('fr-FR') : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Résident</div>
+            <div class="detail-value">
+                <% if (membre.est_resident) { %>
+                    <span class="badge badge-success">Oui</span>
+                <% } else { %>
+                    <span class="badge badge-neutral">Non</span>
+                <% } %>
+            </div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Famille</div>
+            <div class="detail-value"><a href="/familles/<%= membre.famille_id %>" style="color:var(--accent-primary)">#<%= membre.famille_id %></a></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Code Pass'Sport</div>
+            <div class="detail-value"><%= membre.code_pass_sport || '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Statut certificat</div>
+            <div class="detail-value">
+                <% if (membre.statut_certificat === 'valide') { %>
+                    <span class="badge badge-success">Valide</span>
+                <% } else if (membre.statut_certificat === 'expire') { %>
+                    <span class="badge badge-danger">Expiré</span>
+                <% } else if (membre.statut_certificat === 'refuse') { %>
+                    <span class="badge badge-danger">Refusé</span>
+                <% } else if (membre.statut_certificat === 'medical_non_compliant') { %>
+                    <span class="badge badge-warning">Non conforme</span>
+                <% } else { %>
+                    <span style="color:var(--text-muted)">—</span>
+                <% } %>
+            </div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Émission certificat</div>
+            <div class="detail-value"><%= membre.date_emission_certificat ? new Date(membre.date_emission_certificat).toLocaleDateString('fr-FR') : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Expiration certificat</div>
+            <div class="detail-value"><%= membre.date_expiration_certificat ? new Date(membre.date_expiration_certificat).toLocaleDateString('fr-FR') : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Sport certifié</div>
+            <div class="detail-value"><%= membre.type_sport_certifie || '—' %></div>
+        </div>
+    </div>
+</div>
+
+<br>
+<a href="/membres" class="btn-back">← Retour aux membres</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer ce membre ?')) return;
+        btn.classList.add('loading');
+        const r = await fetch(`/membres/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.href = '/membres'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); }
+    }
+</script>
+
+<%- include('../../partials/footer') %>
