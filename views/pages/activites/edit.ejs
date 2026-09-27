@@ -1,0 +1,103 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Modifier l'activité</h1>
+    <a href="/activites" class="btn-back">← Retour</a>
+</div>
+
+<div class="card" style="max-width:780px">
+    <form id="editForm">
+        <div class="form-grid">
+
+            <div class="form-group full-width">
+                <label for="nom">Nom de l'activité</label>
+                <input type="text" id="nom" name="nom" value="<%= activite.nom %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="prix_base">Prix de base (€)</label>
+                <input type="number" id="prix_base" name="prix_base" value="<%= activite.prix_base %>" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="capacite_max">Capacité maximale</label>
+                <input type="number" id="capacite_max" name="capacite_max" value="<%= activite.capacite_max %>" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="categorie_age">Catégorie d'âge</label>
+                <input type="text" id="categorie_age" name="categorie_age" value="<%= activite.categorie_age || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="type_public">Type de public</label>
+                <input type="text" id="type_public" name="type_public" value="<%= activite.type_public || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="jour_semaine">Jour de la semaine</label>
+                <select id="jour_semaine" name="jour_semaine" required>
+                    <% ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].forEach(j => { %>
+                        <option value="<%= j %>" <%= activite.jour_semaine === j ? 'selected' : '' %>>
+                            <%= j.charAt(0).toUpperCase() + j.slice(1) %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="heure_debut">Heure de début</label>
+                <input type="time" id="heure_debut" name="heure_debut" value="<%= activite.heure_debut %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="heure_fin">Heure de fin</label>
+                <input type="time" id="heure_fin" name="heure_fin" value="<%= activite.heure_fin %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="association_id">Association (ID)</label>
+                <input type="number" id="association_id" name="association_id" value="<%= activite.association_id %>" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="infrastructure_id">Infrastructure (ID)</label>
+                <input type="number" id="infrastructure_id" name="infrastructure_id" value="<%= activite.infrastructure_id %>" min="1" required>
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/activites" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const g = (id) => document.getElementById(id);
+        const data = {
+            nom: g('nom').value,
+            prix_base: Number(g('prix_base').value),
+            capacite_max: Number(g('capacite_max').value),
+            categorie_age: g('categorie_age').value || null,
+            type_public: g('type_public').value || null,
+            jour_semaine: g('jour_semaine').value,
+            heure_debut: g('heure_debut').value,
+            heure_fin: g('heure_fin').value,
+            association_id: Number(g('association_id').value),
+            infrastructure_id: Number(g('infrastructure_id').value)
+        };
+        const r = await fetch('/activites/<%= activite.id %>', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (r.ok) { window.location.href = '/activites'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); }
+    });
+</script>
+
+<%- include('../../partials/footer') %>

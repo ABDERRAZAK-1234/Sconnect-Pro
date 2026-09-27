@@ -1,0 +1,70 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Activités</h1>
+    <a href="/activites/create" class="btn btn-primary">+ Nouvelle activité</a>
+</div>
+
+<% if (activites.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">⚽</div>
+        <p>Aucune activité trouvée.</p>
+        <br>
+        <a href="/activites/create" class="btn btn-primary">Créer la première</a>
+    </div>
+<% } else { %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= activites.length %></strong> activité<%= activites.length > 1 ? 's' : '' %></div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Jour</th>
+                    <th>Horaires</th>
+                    <th>Prix</th>
+                    <th>Capacité</th>
+                    <th>Catégorie</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% activites.forEach(a => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= a.id %></span></td>
+                        <td><strong><%= a.nom %></strong></td>
+                        <td><span class="badge badge-primary"><%= a.jour_semaine %></span></td>
+                        <td style="color:var(--text-secondary)"><%= a.heure_debut %> – <%= a.heure_fin %></td>
+                        <td><%= a.prix_base %> €</td>
+                        <td><%= a.capacite_max %></td>
+                        <td><%= a.categorie_age || '—' %></td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/activites/<%= a.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/activites/<%= a.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button class="btn btn-danger" onclick="deleteItem(<%= a.id %>, this)">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette activité ?')) return;
+        btn.classList.add('loading'); btn.textContent = '…';
+        const r = await fetch(`/activites/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.reload(); }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); btn.textContent = 'Supprimer'; }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

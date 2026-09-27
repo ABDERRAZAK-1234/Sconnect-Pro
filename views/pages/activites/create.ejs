@@ -1,0 +1,78 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Nouvelle activité</h1>
+    <a href="/activites" class="btn-back">← Retour</a>
+</div>
+
+<div class="card" style="max-width:780px">
+    <form method="POST" action="/activites">
+        <div class="form-grid">
+
+            <div class="form-group full-width">
+                <label for="nom">Nom de l'activité</label>
+                <input type="text" id="nom" name="nom" placeholder="ex: Yoga du matin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="prix_base">Prix de base (€)</label>
+                <input type="number" id="prix_base" name="prix_base" min="0" step="0.01" placeholder="ex: 25.00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="capacite_max">Capacité maximale</label>
+                <input type="number" id="capacite_max" name="capacite_max" min="1" placeholder="ex: 20" required>
+            </div>
+
+            <div class="form-group">
+                <label for="categorie_age">Catégorie d'âge</label>
+                <input type="text" id="categorie_age" name="categorie_age" placeholder="ex: adulte, enfant...">
+            </div>
+
+            <div class="form-group">
+                <label for="type_public">Type de public</label>
+                <input type="text" id="type_public" name="type_public" placeholder="ex: mixte, féminin...">
+            </div>
+
+            <div class="form-group">
+                <label for="jour_semaine">Jour de la semaine</label>
+                <select id="jour_semaine" name="jour_semaine" required>
+                    <option value="">— Choisir —</option>
+                    <% ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].forEach(j => { %>
+                        <option value="<%= j %>"><%= j.charAt(0).toUpperCase() + j.slice(1) %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="heure_debut">Heure de début</label>
+                <input type="time" id="heure_debut" name="heure_debut" required>
+            </div>
+
+            <div class="form-group">
+                <label for="heure_fin">Heure de fin</label>
+                <input type="time" id="heure_fin" name="heure_fin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="association_id">Association (ID)</label>
+                <input type="number" id="association_id" name="association_id" min="1" placeholder="ex: 1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="infrastructure_id">Infrastructure (ID)</label>
+                <input type="number" id="infrastructure_id" name="infrastructure_id" min="1" placeholder="ex: 1" required>
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Créer l'activité</button>
+            <a href="/activites" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../../partials/footer') %>

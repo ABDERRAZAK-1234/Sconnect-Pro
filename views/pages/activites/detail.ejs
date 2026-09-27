@@ -1,0 +1,69 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title"><%= activite.nom %></h1>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a href="/activites/<%= activite.id %>/edit" class="btn btn-edit">Modifier</a>
+        <button class="btn btn-danger" onclick="deleteItem(<%= activite.id %>, this)">Supprimer</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="detail-card">
+        <div class="detail-field">
+            <div class="detail-label">ID</div>
+            <div class="detail-value">#<%= activite.id %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Nom</div>
+            <div class="detail-value"><%= activite.nom %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Prix de base</div>
+            <div class="detail-value"><%= activite.prix_base %> €</div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Capacité maximale</div>
+            <div class="detail-value"><%= activite.capacite_max %> places</div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Jour</div>
+            <div class="detail-value"><span class="badge badge-primary"><%= activite.jour_semaine %></span></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Horaire</div>
+            <div class="detail-value"><%= activite.heure_debut %> – <%= activite.heure_fin %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Catégorie d'âge</div>
+            <div class="detail-value"><%= activite.categorie_age || '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Type de public</div>
+            <div class="detail-value"><%= activite.type_public || '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Association</div>
+            <div class="detail-value"><a href="/associations/<%= activite.association_id %>" style="color:var(--accent-primary)">#<%= activite.association_id %></a></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Infrastructure</div>
+            <div class="detail-value"><a href="/facilities/<%= activite.infrastructure_id %>" style="color:var(--accent-primary)">#<%= activite.infrastructure_id %></a></div>
+        </div>
+    </div>
+</div>
+
+<br>
+<a href="/activites" class="btn-back">← Retour aux activités</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette activité ?')) return;
+        btn.classList.add('loading');
+        const r = await fetch(`/activites/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.href = '/activites'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); }
+    }
+</script>
+
+<%- include('../../partials/footer') %>
