@@ -1,0 +1,45 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title"><%= association.nom %></h1>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a href="/associations/<%= association.id %>/edit" class="btn btn-edit">Modifier</a>
+        <button class="btn btn-danger" onclick="deleteItem(<%= association.id %>, this)">Supprimer</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="detail-card">
+        <div class="detail-field">
+            <div class="detail-label">ID</div>
+            <div class="detail-value">#<%= association.id %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Nom</div>
+            <div class="detail-value"><%= association.nom %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Contact</div>
+            <div class="detail-value"><%= association.contact || '—' %></div>
+        </div>
+        <div class="detail-field" style="grid-column:1/-1">
+            <div class="detail-label">Description</div>
+            <div class="detail-value" style="white-space:pre-wrap"><%= association.description || '—' %></div>
+        </div>
+    </div>
+</div>
+
+<br>
+<a href="/associations" class="btn-back">← Retour aux associations</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette association ?')) return;
+        btn.classList.add('loading');
+        const r = await fetch(`/associations/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.href = '/associations'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

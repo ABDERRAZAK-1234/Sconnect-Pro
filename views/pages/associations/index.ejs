@@ -1,0 +1,66 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Associations</h1>
+    <a href="/associations/create" class="btn btn-primary">+ Nouvelle association</a>
+</div>
+
+<% if (associations.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">🤝</div>
+        <p>Aucune association trouvée.</p>
+        <br>
+        <a href="/associations/create" class="btn btn-primary">Créer la première</a>
+    </div>
+<% } else { %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= associations.length %></strong> association<%= associations.length > 1 ? 's' : '' %></div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Contact</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% associations.forEach(a => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= a.id %></span></td>
+                        <td><strong><%= a.nom %></strong></td>
+                        <td><%= a.contact || '—' %></td>
+                        <td style="max-width:280px;color:var(--text-secondary)">
+                            <%= a.description ? a.description.substring(0, 70) + (a.description.length > 70 ? '…' : '') : '—' %>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/associations/<%= a.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/associations/<%= a.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button class="btn btn-danger" onclick="deleteItem(<%= a.id %>, this)">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette association ?')) return;
+        btn.classList.add('loading'); btn.textContent = '…';
+        const r = await fetch(`/associations/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.reload(); }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); btn.textContent = 'Supprimer'; }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

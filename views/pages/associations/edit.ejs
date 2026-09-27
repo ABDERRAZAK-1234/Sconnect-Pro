@@ -1,0 +1,54 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Modifier l'association</h1>
+    <a href="/associations" class="btn-back">← Retour</a>
+</div>
+
+<div class="card form-card">
+    <form id="editForm">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="nom">Nom de l'association</label>
+                <input type="text" id="nom" name="nom" value="<%= association.nom %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <input type="text" id="contact" name="contact" value="<%= association.contact || '' %>" placeholder="email, téléphone...">
+            </div>
+
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"><%= association.description || '' %></textarea>
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/associations" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            nom: document.getElementById('nom').value,
+            contact: document.getElementById('contact').value,
+            description: document.getElementById('description').value
+        };
+        const r = await fetch('/associations/<%= association.id %>', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (r.ok) { window.location.href = '/associations'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); }
+    });
+</script>
+
+<%- include('../../partials/footer') %>
