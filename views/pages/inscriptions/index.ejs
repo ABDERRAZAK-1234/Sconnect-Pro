@@ -1,0 +1,79 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Inscriptions</h1>
+    <a href="/inscriptions/create" class="btn btn-primary">+ Nouvelle inscription</a>
+</div>
+
+<% if (inscriptions.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">📋</div>
+        <p>Aucune inscription trouvée.</p>
+        <br>
+        <a href="/inscriptions/create" class="btn btn-primary">Créer la première</a>
+    </div>
+<% } else { %>
+    <%
+        const statutColors = {
+            confirmee: 'badge-success',
+            en_attente: 'badge-warning',
+            annulee: 'badge-danger',
+            expiree: 'badge-neutral',
+            promoted_pending: 'badge-primary'
+        };
+    %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= inscriptions.length %></strong> inscription<%= inscriptions.length > 1 ? 's' : '' %></div>
+        <div class="stat-chip"><strong><%= inscriptions.filter(i=>i.statut==='confirmee').length %></strong> confirmées</div>
+        <div class="stat-chip"><strong><%= inscriptions.filter(i=>i.statut==='en_attente').length %></strong> en attente</div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Membre</th>
+                    <th>Activité</th>
+                    <th>Statut</th>
+                    <th>Prix final</th>
+                    <th>Date inscription</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% inscriptions.forEach(i => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= i.id %></span></td>
+                        <td><a href="/membres/<%= i.membre_id %>" style="color:var(--accent-primary)">#<%= i.membre_id %></a></td>
+                        <td><a href="/activites/<%= i.activite_id %>" style="color:var(--accent-primary)">#<%= i.activite_id %></a></td>
+                        <td><span class="badge <%= statutColors[i.statut] || 'badge-neutral' %>"><%= i.statut %></span></td>
+                        <td><%= i.prix_final !== null ? i.prix_final + ' €' : '—' %></td>
+                        <td style="color:var(--text-secondary);font-size:0.82rem"><%= i.date_inscription ? new Date(i.date_inscription).toLocaleDateString('fr-FR') : '—' %></td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/inscriptions/<%= i.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/inscriptions/<%= i.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button class="btn btn-danger" onclick="deleteItem(<%= i.id %>, this)">Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette inscription ?')) return;
+        btn.classList.add('loading'); btn.textContent = '…';
+        const r = await fetch(`/inscriptions/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.reload(); }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); btn.textContent = 'Supprimer'; }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

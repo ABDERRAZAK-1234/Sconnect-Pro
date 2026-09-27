@@ -1,0 +1,54 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Nouvelle inscription</h1>
+    <a href="/inscriptions" class="btn-back">← Retour</a>
+</div>
+
+<div class="card form-card">
+    <form method="POST" action="/inscriptions">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="membre_id">Membre (ID)</label>
+                <input type="number" id="membre_id" name="membre_id" min="1" placeholder="ex: 1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="activite_id">Activité (ID)</label>
+                <input type="number" id="activite_id" name="activite_id" min="1" placeholder="ex: 1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="statut">Statut</label>
+                <select id="statut" name="statut" required>
+                    <option value="en_attente">En attente</option>
+                    <option value="confirmee">Confirmée</option>
+                    <option value="annulee">Annulée</option>
+                    <option value="expiree">Expirée</option>
+                    <option value="promoted_pending">Promue en attente</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prix_final">Prix final (€)</label>
+                <input type="number" id="prix_final" name="prix_final" min="0" step="0.01" placeholder="Optionnel">
+            </div>
+
+            <div class="form-group">
+                <label for="score_priorite">Score de priorité</label>
+                <input type="number" id="score_priorite" name="score_priorite" min="0" placeholder="Optionnel">
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Créer l'inscription</button>
+            <a href="/inscriptions" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../../partials/footer') %>

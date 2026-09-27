@@ -1,0 +1,76 @@
+<%- include('../../partials/header') %>
+
+<%
+    const statutLabels = {
+        confirmee: { label: 'Confirmée', cls: 'badge-success' },
+        en_attente: { label: 'En attente', cls: 'badge-warning' },
+        annulee: { label: 'Annulée', cls: 'badge-danger' },
+        expiree: { label: 'Expirée', cls: 'badge-neutral' },
+        promoted_pending: { label: 'Promue en attente', cls: 'badge-primary' }
+    };
+    const s = statutLabels[inscription.statut] || { label: inscription.statut, cls: 'badge-neutral' };
+%>
+
+<div class="page-header">
+    <h1 class="page-title">Inscription #<%= inscription.id %></h1>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a href="/inscriptions/<%= inscription.id %>/edit" class="btn btn-edit">Modifier</a>
+        <button class="btn btn-danger" onclick="deleteItem(<%= inscription.id %>, this)">Supprimer</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="detail-card">
+        <div class="detail-field">
+            <div class="detail-label">ID</div>
+            <div class="detail-value">#<%= inscription.id %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Membre</div>
+            <div class="detail-value"><a href="/membres/<%= inscription.membre_id %>" style="color:var(--accent-primary)">#<%= inscription.membre_id %></a></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Activité</div>
+            <div class="detail-value"><a href="/activites/<%= inscription.activite_id %>" style="color:var(--accent-primary)">#<%= inscription.activite_id %></a></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Statut</div>
+            <div class="detail-value"><span class="badge <%= s.cls %>"><%= s.label %></span></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Prix final</div>
+            <div class="detail-value"><%= inscription.prix_final !== null ? inscription.prix_final + ' €' : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Score de priorité</div>
+            <div class="detail-value"><%= inscription.score_priorite !== null ? inscription.score_priorite : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Date d'inscription</div>
+            <div class="detail-value"><%= inscription.date_inscription ? new Date(inscription.date_inscription).toLocaleString('fr-FR') : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Entrée liste d'attente</div>
+            <div class="detail-value"><%= inscription.date_entree_liste_attente ? new Date(inscription.date_entree_liste_attente).toLocaleString('fr-FR') : '—' %></div>
+        </div>
+        <div class="detail-field">
+            <div class="detail-label">Délai de confirmation</div>
+            <div class="detail-value"><%= inscription.delai_confirmation ? new Date(inscription.delai_confirmation).toLocaleString('fr-FR') : '—' %></div>
+        </div>
+    </div>
+</div>
+
+<br>
+<a href="/inscriptions" class="btn-back">← Retour aux inscriptions</a>
+
+<script>
+    async function deleteItem(id, btn) {
+        if (!confirm('Supprimer cette inscription ?')) return;
+        btn.classList.add('loading');
+        const r = await fetch(`/inscriptions/${id}`, { method: 'DELETE' });
+        if (r.ok) { window.location.href = '/inscriptions'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); btn.classList.remove('loading'); }
+    }
+</script>
+
+<%- include('../../partials/footer') %>

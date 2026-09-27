@@ -1,0 +1,72 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Modifier l'inscription</h1>
+    <a href="/inscriptions" class="btn-back">← Retour</a>
+</div>
+
+<div class="card form-card">
+    <div style="margin-bottom:1.25rem;padding:0.85rem 1rem;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:var(--radius-md);font-size:0.875rem;color:var(--text-secondary)">
+        Membre <a href="/membres/<%= inscription.membre_id %>" style="color:var(--accent-primary)">#<%= inscription.membre_id %></a>
+        &nbsp;·&nbsp;
+        Activité <a href="/activites/<%= inscription.activite_id %>" style="color:var(--accent-primary)">#<%= inscription.activite_id %></a>
+    </div>
+
+    <form id="editForm">
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="statut">Statut</label>
+                <select id="statut" name="statut" required>
+                    <option value="en_attente" <%= inscription.statut === 'en_attente' ? 'selected' : '' %>>En attente</option>
+                    <option value="confirmee" <%= inscription.statut === 'confirmee' ? 'selected' : '' %>>Confirmée</option>
+                    <option value="annulee" <%= inscription.statut === 'annulee' ? 'selected' : '' %>>Annulée</option>
+                    <option value="expiree" <%= inscription.statut === 'expiree' ? 'selected' : '' %>>Expirée</option>
+                    <option value="promoted_pending" <%= inscription.statut === 'promoted_pending' ? 'selected' : '' %>>Promue en attente</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prix_final">Prix final (€)</label>
+                <input type="number" id="prix_final" name="prix_final"
+                    value="<%= inscription.prix_final !== null ? inscription.prix_final : '' %>"
+                    min="0" step="0.01" placeholder="Optionnel">
+            </div>
+
+            <div class="form-group">
+                <label for="score_priorite">Score de priorité</label>
+                <input type="number" id="score_priorite" name="score_priorite"
+                    value="<%= inscription.score_priorite !== null ? inscription.score_priorite : '' %>"
+                    min="0" placeholder="Optionnel">
+            </div>
+
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/inscriptions" class="btn btn-ghost">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pf = document.getElementById('prix_final').value;
+        const sp = document.getElementById('score_priorite').value;
+        const data = {
+            statut: document.getElementById('statut').value,
+            prix_final: pf !== '' ? Number(pf) : null,
+            score_priorite: sp !== '' ? Number(sp) : null
+        };
+        const r = await fetch('/inscriptions/<%= inscription.id %>', {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        });
+        if (r.ok) { window.location.href = '/inscriptions'; }
+        else { const j = await r.json(); alert(j.message || 'Erreur'); }
+    });
+</script>
+
+<%- include('../../partials/footer') %>
