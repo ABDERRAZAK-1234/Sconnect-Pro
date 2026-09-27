@@ -1,0 +1,84 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Infrastructures</h1>
+    <a href="/facilities/create" class="btn btn-primary">+ Nouvelle infrastructure</a>
+</div>
+
+<% if (facilities.length === 0) { %>
+    <div class="card empty-state">
+        <div class="empty-state-icon">🏟️</div>
+        <p>Aucune infrastructure trouvée.</p>
+        <br>
+        <a href="/facilities/create" class="btn btn-primary">Créer la première</a>
+    </div>
+<% } else { %>
+    <div class="stats-row">
+        <div class="stat-chip"><strong><%= facilities.length %></strong> infrastructure<%= facilities.length > 1 ? 's' : '' %></div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Capacité ERP</th>
+                    <th>Divisible</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% facilities.forEach(facility => { %>
+                    <tr>
+                        <td><span style="color:var(--text-muted)">#<%= facility.id %></span></td>
+                        <td><strong><%= facility.nom %></strong></td>
+                        <td><span class="badge badge-primary"><%= facility.type %></span></td>
+                        <td><%= facility.capacite_erp %></td>
+                        <td>
+                            <% if (facility.divisible) { %>
+                                <span class="badge badge-success">Oui</span>
+                            <% } else { %>
+                                <span class="badge badge-neutral">Non</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="/facilities/<%= facility.id %>" class="btn btn-ghost">Voir</a>
+                                <a href="/facilities/<%= facility.id %>/edit" class="btn btn-edit">Modifier</a>
+                                <button
+                                    id="btn-delete-facility-<%= facility.id %>"
+                                    class="btn btn-danger"
+                                    onclick="deleteFacility(<%= facility.id %>, this)"
+                                >Supprimer</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<br>
+<a href="/" class="btn-back">← Accueil</a>
+
+<script>
+    async function deleteFacility(id, btn) {
+        if (!confirm('Supprimer cette infrastructure ?')) return;
+        btn.classList.add('loading');
+        btn.textContent = '…';
+
+        const r = await fetch(`/facilities/${id}`, { method: 'DELETE' });
+        if (r.ok) {
+            window.location.reload();
+        } else {
+            const j = await r.json();
+            alert(j.message || 'Erreur');
+            btn.classList.remove('loading');
+            btn.textContent = 'Supprimer';
+        }
+    }
+</script>
+
+<%- include('../../partials/footer') %>
