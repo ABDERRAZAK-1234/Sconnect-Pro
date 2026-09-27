@@ -1,0 +1,52 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+    <h1 class="page-title">Accueil</h1>
+</div>
+
+<p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 1rem;">
+    Bienvenue dans la plateforme de gestion sportive et associative.
+</p>
+<p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">
+    Gérez vos infrastructures, associations, familles, membres et activités depuis une interface unique.
+</p>
+
+<div class="home-grid">
+    <a href="/facilities" class="home-card">
+        <div class="home-card-icon">🏟️</div>
+        <div class="home-card-title">Infrastructures</div>
+        <div class="home-card-desc">Salles, terrains et équipements sportifs</div>
+    </a>
+    <a href="/associations" class="home-card">
+        <div class="home-card-icon">🤝</div>
+        <div class="home-card-title">Associations</div>
+        <div class="home-card-desc">Clubs et associations sportives</div>
+    </a>
+    <a href="/familles" class="home-card">
+        <div class="home-card-icon">👨‍👩‍👧</div>
+        <div class="home-card-title">Familles</div>
+        <div class="home-card-desc">Gestion des foyers inscrits</div>
+    </a>
+    <a href="/membres" class="home-card">
+        <div class="home-card-icon">👤</div>
+        <div class="home-card-title">Membres</div>
+        <div class="home-card-desc">Licenciés et leurs certificats médicaux</div>
+    </a>
+    <a href="/activites" class="home-card">
+        <div class="home-card-icon">⚽</div>
+        <div class="home-card-title">Activités</div>
+        <div class="home-card-desc">Cours, ateliers et créneaux hebdomadaires</div>
+    </a>
+    <a href="/inscriptions" class="home-card">
+        <div class="home-card-icon">📋</div>
+        <div class="home-card-title">Inscriptions</div>
+        <div class="home-card-desc">Suivi des inscriptions et listes d'attente</div>
+    </a>
+    <a href="/paiements" class="home-card">
+        <div class="home-card-icon">💳</div>
+        <div class="home-card-title">Paiements</div>
+        <div class="home-card-desc">Montants, méthodes et statuts de paiement</div>
+    </a>
+</div>
+
+<%- include('../../partials/footer') %>
